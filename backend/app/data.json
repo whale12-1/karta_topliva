@@ -1,0 +1,278 @@
+{
+  "regions": {
+    "krasnodar": {
+      "name": "Краснодарский край",
+      "population": 5829000,
+      "saf": 1983.03,
+      "passengers": 6500000,
+      "emissions": 9121918.68
+    },
+    "sverdlovsk": {
+      "name": "Свердловская область",
+      "population": 4300708,
+      "saf": 1324.92,
+      "passengers": 8000000,
+      "emissions": 6094627.92
+    },
+    "stavropol": {
+      "name": "Ставропольский край",
+      "population": 2884363,
+      "saf": 1035.77,
+      "passengers": 5100000,
+      "emissions": 4764563.87
+    },
+    "saratov": {
+      "name": "Саратовская область",
+      "population": 2349471,
+      "saf": 923.62,
+      "passengers": 1000000,
+      "emissions": 4248670.58
+    },
+    "tula": {
+      "name": "Тульская область",
+      "population": 1412772,
+      "saf": 501.99,
+      "passengers": 80000,
+      "emissions": 2309136.28
+    },
+    "amur": {
+      "name": "Амурская область",
+      "population": 753046,
+      "saf": 214.91,
+      "passengers": 1016500,
+      "emissions": 988594.27
+    },
+    "novgorod": {
+      "name": "Новгородская область",
+      "population": 571666,
+      "saf": 162.07,
+      "passengers": 20900000,
+      "emissions": 745509.63
+    },
+    "eao": {
+      "name": "Еврейская автономная область",
+      "population": 144428,
+      "saf": 41.22,
+      "passengers": 2578000,
+      "emissions": 189604.21
+    }
+  },
+  "scenarios": {
+    "fuel": {
+      "1500_low": {
+        "novgorod": 203775,
+        "sverdlovsk": 109200,
+        "krasnodar": 63375,
+        "stavropol": 61200,
+        "eao": 42537,
+        "saratov": 14325,
+        "amur": 9910.875,
+        "tula": 1146
+      },
+      "1500_medium": {
+        "novgorod": 692835.00,
+        "sverdlovsk": 151200.00,
+        "krasnodar": 138986.25,
+        "stavropol": 131671.80,
+        "eao": 48595.30,
+        "amur": 31215.94,
+        "saratov": 17650.00,
+        "tula": 1931.50
+      },
+      "1500_high": {
+        "novgorod": 3627195.00,
+        "stavropol": 885105.00,
+        "krasnodar": 224250.00,
+        "sverdlovsk": 180000.00,
+        "amur": 176413.58,
+        "eao": 52204.50,
+        "saratov": 26250.00,
+        "tula": 2700.00
+      },
+      "3000_low": {
+        "novgorod": 407550.00,
+        "sverdlovsk": 218400.00,
+        "krasnodar": 126750.00,
+        "stavropol": 122400.00,
+        "eao": 85074.00,
+        "saratov": 28650.00,
+        "amur": 19821.75,
+        "tula": 2292.00
+      },
+      "3000_medium": {
+        "novgorod": 1385670.00,
+        "sverdlovsk": 302400.00,
+        "krasnodar": 277972.50,
+        "stavropol": 263343.60,
+        "eao": 97190.60,
+        "amur": 62431.88,
+        "saratov": 35300.00,
+        "tula": 3863.00
+      },
+      "3000_high": {
+        "novgorod": 7254390.00,
+        "stavropol": 1770210.00,
+        "krasnodar": 448500.00,
+        "sverdlovsk": 360000.00,
+        "amur": 352827.15,
+        "eao": 104409.00,
+        "saratov": 52500.00,
+        "tula": 5400.00
+      },
+      "4500_low": {
+        "novgorod": 611325.00,
+        "sverdlovsk": 327600.00,
+        "krasnodar": 190125.00,
+        "stavropol": 183600.00,
+        "eao": 127611.00,
+        "saratov": 42975.00,
+        "amur": 29732.63,
+        "tula": 3438.00
+      },
+      "4500_medium": {
+        "novgorod": 2078505.00,
+        "sverdlovsk": 453600.00,
+        "krasnodar": 416958.75,
+        "stavropol": 395015.40,
+        "eao": 145785.90,
+        "amur": 93647.82,
+        "saratov": 52950.00,
+        "tula": 5794.50
+      },
+      "4500_high": {
+        "novgorod": 10881585.00,
+        "stavropol": 2655315.00,
+        "krasnodar": 672750.00,
+        "sverdlovsk": 540000.00,
+        "amur": 529240.73,
+        "eao": 156613.50,
+        "saratov": 78750.00,
+        "tula": 8100.00
+      }
+    },
+    "coverage": {
+      "1500_low": {
+        "tula": 43.80,
+        "saratov": 6.45,
+        "krasnodar": 3.13,
+        "amur": 2.17,
+        "stavropol": 1.69,
+        "sverdlovsk": 1.21,
+        "eao": 0.10,
+        "novgorod": 0.08
+      },
+      "1500_medium": {
+        "tula": 25.99,
+        "saratov": 5.23,
+        "krasnodar": 1.43,
+        "sverdlovsk": 0.88,
+        "stavropol": 0.79,
+        "amur": 0.69,
+        "eao": 0.08,
+        "novgorod": 0.02
+      },
+      "1500_high": {
+        "tula": 18.59,
+        "saratov": 3.52,
+        "krasnodar": 0.88,
+        "sverdlovsk": 0.74,
+        "amur": 0.12,
+        "stavropol": 0.12,
+        "eao": 0.08,
+        "novgorod": 0.00
+      },
+      "3000_low": {
+        "tula": 21.90,
+        "saratov": 3.22,
+        "krasnodar": 1.56,
+        "amur": 1.08,
+        "stavropol": 0.85,
+        "sverdlovsk": 0.61,
+        "eao": 0.05,
+        "novgorod": 0.04
+      },
+      "3000_medium": {
+        "tula": 12.99,
+        "saratov": 2.62,
+        "krasnodar": 0.71,
+        "sverdlovsk": 0.44,
+        "stavropol": 0.39,
+        "amur": 0.34,
+        "eao": 0.04,
+        "novgorod": 0.01
+      },
+      "3000_high": {
+        "tula": 9.30,
+        "saratov": 1.76,
+        "krasnodar": 0.44,
+        "sverdlovsk": 0.37,
+        "amur": 0.06,
+        "stavropol": 0.06,
+        "eao": 0.04,
+        "novgorod": 0.00
+      },
+      "4500_low": {
+        "tula": 14.60,
+        "saratov": 2.15,
+        "krasnodar": 1.04,
+        "amur": 0.72,
+        "stavropol": 0.56,
+        "sverdlovsk": 0.40,
+        "eao": 0.03,
+        "novgorod": 0.03
+      },
+      "4500_medium": {
+        "tula": 8.66,
+        "saratov": 1.74,
+        "krasnodar": 0.48,
+        "sverdlovsk": 0.29,
+        "stavropol": 0.26,
+        "amur": 0.23,
+        "eao": 0.03,
+        "novgorod": 0.01
+      },
+      "4500_high": {
+        "tula": 6.20,
+        "saratov": 1.17,
+        "krasnodar": 0.29,
+        "sverdlovsk": 0.25,
+        "amur": 0.04,
+        "stavropol": 0.04,
+        "eao": 0.03,
+        "novgorod": 0.00
+      }
+    },
+    "rating": {
+      "low": {
+        "krasnodar": 0.5744,
+        "tula": 0.4269,
+        "sverdlovsk": 0.3727,
+        "saratov": 0.3009,
+        "stavropol": 0.2946,
+        "amur": 0.0659,
+        "novgorod": -0.0568,
+        "eao": -0.0999
+      },
+      "medium": {
+        "krasnodar": 0.5689,
+        "tula": 0.4269,
+        "sverdlovsk": 0.3751,
+        "saratov": 0.3202,
+        "stavropol": 0.2920,
+        "amur": 0.0582,
+        "novgorod": -0.0568,
+        "eao": -0.0992
+      },
+      "high": {
+        "krasnodar": 0.5666,
+        "tula": 0.4269,
+        "sverdlovsk": 0.3774,
+        "saratov": 0.3161,
+        "stavropol": 0.2838,
+        "amur": 0.0514,
+        "novgorod": -0.0568,
+        "eao": -0.0986
+      }
+    }
+  }
+}
