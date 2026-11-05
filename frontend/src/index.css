@@ -73,20 +73,20 @@ button { -webkit-tap-highlight-color: transparent; }
 
 .filters-bar {
   flex: 0 0 auto; padding: 12px 18px;
-  background: linear-gradient(90deg, rgba(11, 35, 55, .98), rgba(14, 49, 67, .96));
+  background: linear-gradient(90deg, #0b415b 0%, #0b5670 58%, #0a3d58 100%);
   border-bottom: 1px solid rgba(126, 190, 213, .2);
   box-shadow: 0 7px 24px rgba(0,0,0,.14); z-index: 15;
 }
 .filter-groups-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
 .scenario-card {
   min-width: 0; padding: 11px 16px 12px; border-radius: 13px;
-  border: 1px solid rgba(117, 164, 191, .25); background: rgba(12, 36, 57, .76);
+  border: 1px solid rgba(164, 216, 230, .30); background: linear-gradient(145deg, rgba(15, 83, 108, .98), rgba(9, 62, 88, .98));
   transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
 }
 .scenario-card-active {
   border-color: rgba(52, 211, 153, .68);
-  background: linear-gradient(120deg, rgba(19, 75, 75, .56), rgba(13, 44, 64, .83));
-  box-shadow: inset 0 0 0 1px rgba(52, 211, 153, .12), 0 0 18px rgba(16, 185, 129, .08);
+  background: linear-gradient(120deg, rgba(18, 91, 108, .98), rgba(10, 66, 91, .98));
+  box-shadow: inset 0 0 0 1px rgba(52, 211, 153, .14), 0 0 18px rgba(16, 185, 129, .12);
 }
 .scenario-card-title {
   display: flex; align-items: center; gap: 10px; width: 100%; padding: 0; border: 0;
@@ -103,11 +103,11 @@ button { -webkit-tap-highlight-color: transparent; }
 .scenario-select-wrap select {
   width: 100%; min-width: 0; height: 34px; appearance: none; padding: 0 32px 0 12px;
   border: 1px solid rgba(111, 153, 183, .34); border-radius: 8px; outline: none;
-  color: #eff8fc; background: linear-gradient(180deg, #183e5c, #12334f);
+  color: #f3fbff; background: linear-gradient(180deg, #17617b, #104b66);
   font-size: 11px; font-weight: 650; cursor: pointer;
 }
 .scenario-select-wrap select:focus { border-color: #45d6a4; box-shadow: 0 0 0 2px rgba(52, 211, 153, .12); }
-.scenario-select-wrap option { color: #eaf3f8; background: #102b43; }
+.scenario-select-wrap option { color: #f0f8fc; background: #0b415b; }
 .select-chevron { position: absolute; top: 5px; right: 11px; color: #65d5c4; font-size: 18px; pointer-events: none; }
 .rating-filter-row { display: flex; align-items: center; gap: 20px; min-height: 54px; padding: 0 12px; }
 .rating-filter-label { color: #7e9db1; font-size: 10px; font-weight: 800; letter-spacing: 1px; }
@@ -126,7 +126,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .map-zoom-control {
   position: absolute; top: 14px; left: 14px; z-index: 1000; display: flex; flex-direction: column;
   overflow: hidden; border: 1px solid rgba(135, 190, 211, .32); border-radius: 10px;
-  background: rgba(9, 31, 50, .9); box-shadow: 0 8px 22px rgba(0,0,0,.28); backdrop-filter: blur(8px);
+  background: rgba(10, 69, 92, .96); box-shadow: 0 8px 22px rgba(0,0,0,.22); backdrop-filter: blur(8px);
 }
 .map-zoom-control button { width: 35px; height: 34px; border: 0; color: #dcecf4; background: transparent; font-size: 20px; font-weight: 600; cursor: pointer; }
 .map-zoom-control button + button { border-top: 1px solid rgba(132, 173, 194, .22); }
@@ -134,7 +134,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .map-caption {
   position: absolute; bottom: 15px; left: 18px; z-index: 4; display: flex; align-items: center; gap: 8px;
   padding: 7px 10px; border: 1px solid rgba(186, 224, 235, .2); border-radius: 20px;
-  color: rgba(218, 240, 248, .76); background: rgba(6, 28, 47, .55); backdrop-filter: blur(8px);
+  color: rgba(235, 249, 253, .9); background: rgba(11, 72, 96, .78); backdrop-filter: blur(8px);
   font-size: 9px; font-weight: 800; letter-spacing: 1.2px;
 }
 .map-caption-dot { width: 7px; height: 7px; border-radius: 50%; background: #54e1a8; box-shadow: 0 0 9px #54e1a8; }
@@ -144,12 +144,12 @@ button { -webkit-tap-highlight-color: transparent; }
 .right-sidebar {
   display: flex; flex: 0 0 410px; flex-direction: column; gap: 13px; min-width: 0;
   padding: 14px; overflow-y: auto; border-left: 1px solid rgba(124, 177, 202, .22);
-  background: linear-gradient(180deg, rgba(10, 31, 50, .98), rgba(7, 25, 42, .98));
+  background: linear-gradient(180deg, #0b4b65 0%, #0b415b 56%, #083650 100%);
   box-shadow: -12px 0 30px rgba(0,0,0,.14); z-index: 5;
 }
 .region-summary, .region-placeholder, .ranking-panel {
-  border: 1px solid rgba(104, 157, 183, .27); border-radius: 13px;
-  background: linear-gradient(145deg, rgba(22, 49, 70, .88), rgba(14, 35, 55, .94));
+  border: 1px solid rgba(164, 216, 230, .30); border-radius: 13px;
+  background: linear-gradient(145deg, rgba(17, 83, 108, .98), rgba(9, 61, 86, .98));
   box-shadow: 0 8px 24px rgba(0,0,0,.12);
 }
 .region-summary { padding: 15px 15px 13px; border-color: rgba(60, 211, 153, .52); box-shadow: 0 0 22px rgba(16, 185, 129, .08), inset 0 1px rgba(255,255,255,.035); }
@@ -187,8 +187,8 @@ button { -webkit-tap-highlight-color: transparent; }
   border: 1px solid transparent; border-radius: 8px; color: #e1edf4; background: transparent; text-align: left; cursor: pointer;
   transition: background .15s ease, border-color .15s ease;
 }
-.ranking-row:hover { background: rgba(95, 144, 168, .15); }
-.ranking-row.selected { border-color: rgba(112, 171, 195, .4); background: rgba(78, 128, 153, .18); }
+.ranking-row:hover { background: rgba(169, 224, 238, .12); }
+.ranking-row.selected { border-color: rgba(167, 225, 238, .42); background: rgba(113, 190, 210, .20); }
 .rank-index { display: grid; place-items: center; flex: 0 0 21px; width: 21px; height: 21px; border-radius: 50%; color: #071b2a; background: var(--rank-color); font-size: 10px; font-weight: 800; }
 .rank-region-name { flex: 1; min-width: 0; color: #d8e6ee; font-size: 10px; font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rank-value { flex: 0 0 auto; color: #eff6fa; font-size: 10px; font-weight: 750; font-variant-numeric: tabular-nums; }
@@ -198,7 +198,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .error-message { color: #ff9b9b; }
 
 ::-webkit-scrollbar { width: 7px; height: 7px; }
-::-webkit-scrollbar-track { background: rgba(5, 21, 36, .4); border-radius: 6px; }
+::-webkit-scrollbar-track { background: rgba(5, 45, 64, .42); border-radius: 6px; }
 ::-webkit-scrollbar-thumb { background: rgba(111, 151, 174, .38); border-radius: 6px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(130, 179, 199, .6); }
 
