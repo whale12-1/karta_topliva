@@ -324,3 +324,129 @@ button { -webkit-tap-highlight-color: transparent; }
   .ranking-footnote { font-size: 10.5px; }
   .ranking-panel { min-height: 410px; }
 }
+
+/* ================================================================
+   EXTRA LARGE TYPOGRAPHY UPDATE
+   Further enlarge text for conference-screen readability.
+   This layer intentionally overrides the previous accessibility pass.
+   ================================================================ */
+.brand-name { font-size: 26px; letter-spacing: -.35px; }
+.top-tab { min-height: 48px; padding-inline: 25px; font-size: 17px; gap: 10px; }
+.tab-filter-glyph { font-size: 21px; }
+.tab-rating-glyph { font-size: 20px; }
+.header-note { font-size: 12px; letter-spacing: 1px; }
+
+.filters-bar { padding: 16px 22px; }
+.filter-groups-grid { gap: 16px; }
+.scenario-card { padding: 15px 20px 16px; border-radius: 15px; }
+.scenario-card-title { gap: 13px; font-size: 18px; line-height: 1.25; }
+.scenario-icon { width: 38px; height: 38px; border-radius: 11px; }
+.scenario-active-hint { font-size: 11.5px; letter-spacing: .35px; }
+.scenario-fields { gap: 18px; margin: 14px 0 0 51px; }
+.scenario-field { gap: 13px; font-size: 15.5px; }
+.scenario-select-wrap select { height: 46px; padding: 0 40px 0 15px; border-radius: 10px; font-size: 16px; }
+.select-chevron { top: 9px; right: 13px; font-size: 22px; }
+.rating-filter-row { min-height: 68px; gap: 22px; }
+.rating-filter-label { font-size: 14px; letter-spacing: .7px; }
+.rating-filter-note { font-size: 14px; }
+
+.map-zoom-control button { width: 44px; height: 44px; font-size: 27px; }
+.map-caption { padding: 10px 14px; font-size: 12px; letter-spacing: .8px; }
+
+.right-sidebar { flex-basis: 470px; gap: 16px; padding: 17px; }
+.region-summary { padding: 19px 19px 17px; border-radius: 15px; }
+.region-summary-heading { gap: 14px; padding-bottom: 16px; }
+.summary-leaf { width: 39px; height: 39px; border-radius: 11px; }
+.region-summary-heading h2 { font-size: 22px; line-height: 1.3; }
+.region-summary-body { gap: 15px; padding-top: 16px; }
+.region-metrics { gap: 15px; }
+.metric-line { gap: 12px; }
+.metric-line span { font-size: 14px; line-height: 1.35; }
+.metric-line strong { font-size: 16.5px; line-height: 1.35; }
+.region-rank-box { flex-basis: 82px; padding-left: 14px; }
+.region-rank-number { width: 64px; height: 64px; margin-bottom: 8px; font-size: 28px; }
+.region-rank-box > span { font-size: 11.5px; letter-spacing: .35px; }
+.region-placeholder { min-height: 130px; padding: 20px; gap: 14px; }
+.placeholder-icon { width: 42px; height: 42px; }
+.region-placeholder strong { font-size: 17px; }
+.region-placeholder span:not(.placeholder-icon) { font-size: 14px; line-height: 1.45; }
+
+.ranking-panel { padding: 18px 16px 14px; border-radius: 15px; }
+.ranking-heading { gap: 12px; padding: 0 4px 15px; }
+.ranking-heading h3 { font-size: 19px; line-height: 1.35; letter-spacing: .1px; }
+.ranking-heading p { margin-top: 7px; font-size: 14px; line-height: 1.4; }
+.ranking-sort { font-size: 26px; }
+.ranking-columns { gap: 13px; padding: 12px 10px 7px; font-size: 12.5px; letter-spacing: .35px; }
+.ranking-list { gap: 5px; margin-top: 5px; }
+.ranking-row {
+  gap: 11px; min-height: 50px; padding: 8px 10px; border-radius: 10px;
+}
+.rank-index { flex-basis: 30px; width: 30px; height: 30px; font-size: 14px; }
+.rank-region-name {
+  font-size: 16px; font-weight: 650; line-height: 1.2;
+  white-space: normal; overflow: visible; text-overflow: clip;
+}
+.rank-value { font-size: 16px; font-weight: 800; }
+.ranking-footnote { gap: 10px; padding-top: 13px; font-size: 13px; line-height: 1.4; }
+.ranking-footnote span { width: 10px; height: 10px; flex: 0 0 10px; }
+.status-message { margin: 18px 5px; font-size: 15px; }
+
+@media (max-width: 1200px) {
+  .right-sidebar { flex-basis: 430px; }
+  .scenario-card-title { font-size: 16px; }
+  .scenario-field { font-size: 13.5px; }
+  .scenario-select-wrap select { font-size: 14.5px; }
+  .rank-region-name { font-size: 15px; }
+  .rank-value { font-size: 15px; }
+}
+
+@media (max-width: 1050px) {
+  .right-sidebar { flex-basis: 405px; }
+  .brand-name { font-size: 23px; }
+  .top-tab { min-height: 44px; padding-inline: 17px; font-size: 15px; }
+  .scenario-card { padding: 13px 14px; }
+  .scenario-card-title { font-size: 15px; }
+  .scenario-fields { gap: 10px; margin-left: 0; }
+  .scenario-field { flex-wrap: wrap; white-space: normal; font-size: 13px; }
+  .scenario-select-wrap select { height: 42px; font-size: 14px; }
+  .region-summary-heading h2 { font-size: 20px; }
+  .metric-line span { font-size: 13px; }
+  .metric-line strong { font-size: 15px; }
+  .ranking-heading h3 { font-size: 17px; }
+  .ranking-heading p { font-size: 12.5px; }
+  .rank-region-name { font-size: 14px; }
+  .rank-value { font-size: 14.5px; }
+}
+
+@media (max-width: 760px) {
+  .brand-name { font-size: 20px; }
+  .top-tabs { gap: 5px; }
+  .top-tab { min-height: 42px; padding-inline: 12px; font-size: 14px; }
+  .filters-bar { padding: 12px; }
+  .scenario-card { padding: 13px 14px; }
+  .scenario-card-title { font-size: 16px; }
+  .scenario-icon { width: 34px; height: 34px; }
+  .scenario-fields { gap: 10px; margin-top: 11px; }
+  .scenario-field { font-size: 13px; }
+  .scenario-select-wrap select { height: 42px; font-size: 14px; }
+  .scenario-active-hint { font-size: 9.5px; }
+  .rating-filter-label { font-size: 12.5px; }
+  .rating-filter-note { font-size: 12.5px; }
+  .map-stage { min-height: 440px; }
+  .right-sidebar { flex-basis: auto; width: 100%; padding: 13px; }
+  .region-summary { padding: 16px; }
+  .region-summary-heading h2 { font-size: 20px; }
+  .metric-line span { font-size: 13px; }
+  .metric-line strong { font-size: 15px; }
+  .region-rank-number { width: 58px; height: 58px; font-size: 25px; }
+  .ranking-panel { min-height: 470px; padding: 16px 13px 13px; }
+  .ranking-heading h3 { font-size: 17px; }
+  .ranking-heading p { font-size: 12.5px; }
+  .ranking-columns { font-size: 11.5px; }
+  .ranking-row { min-height: 48px; gap: 9px; padding: 8px; }
+  .rank-index { flex-basis: 28px; width: 28px; height: 28px; font-size: 13px; }
+  .rank-region-name { font-size: 14.5px; }
+  .rank-value { font-size: 14.5px; }
+  .ranking-footnote { font-size: 11.5px; }
+  .map-caption { font-size: 10.5px; }
+}
