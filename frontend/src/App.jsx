@@ -1,202 +1,276 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Map from './components/Map';
 import { fetchRegions, fetchScenario } from './api';
 import { getSortedRegions } from './utils/calculate';
 import { RANK_COLORS } from './data/constants';
 
-// --- Иконки (SVG) ---
-const IconLeaf = () => <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M2 12C2 6.477 6.477 2 12 2c4.991 0 9.123 3.65 9.876 8.421.021.134.034.269.034.406 0 6.075-4.925 11-11 11-5.075 0-9.38-3.456-10.577-8.135a1.002 1.002 0 0 1 1.667-.692ZM12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z"/></svg>;
-const IconUsers = () => <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>;
-const IconGas = () => <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 3v2m6-2v2M9 19v-2m6-2v-2M4 9h2m-2 6h2m14-6h-2m2 6h-2M5 7a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V9a2 2 0 00-2-2H5z" /></svg>;
-const IconPlane = () => <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>;
-const IconCloud = () => <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" /></svg>;
+const IconLeaf = () => (
+  <svg className="h-6 w-6 shrink-0 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M20.5 3.5C12 3.5 5 6.2 4.1 12.1c-.5 3.5 2.1 6.2 5.4 6.2 5.2 0 9.4-6.3 11-14.8ZM3.5 21c2.1-5 5.6-8.3 10.4-10.9" />
+  </svg>
+);
+const IconUsers = () => <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M16 19h5v-1a4 4 0 0 0-5.2-3.8M16 19H8m8 0v-1a4 4 0 0 0-8 0v1m8-12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm5 3a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM3 10a2.5 2.5 0 1 0 5 0 2.5 2.5 0 0 0-5 0Z" /></svg>;
+const IconGas = () => <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M4 21V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v16M2 21h15M7 7h5v5H7zM15 8h2l3 3v6a2 2 0 0 1-4 0v-3" /></svg>;
+const IconPlane = () => <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="m3 14 18-5-7 7-2 5-3-7-6 0Zm9 0 2-5" /></svg>;
+const IconCloud = () => <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18h11a4 4 0 0 0 .5-8A6 6 0 0 0 6 8.5 4.8 4.8 0 0 0 6 18Z" /></svg>;
+const IconFuel = () => <svg className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M4 21V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v16M2 21h15M7 7h5v5H7zM15 8h2l3 3v6a2 2 0 0 1-4 0v-3" /></svg>;
+const IconCoverage = () => <svg className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18m0-18a9 9 0 1 0 9 9h-9V3Z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 3.5A9 9 0 0 1 20.5 9H15V3.5Z" /></svg>;
+
+const DISTANCES = [
+  { value: '1500', label: '1500 км' },
+  { value: '3000', label: '3000 км' },
+  { value: '4500', label: '4500 км' },
+];
+const FUEL_LEVELS = [
+  { value: 'low', label: 'Малый' },
+  { value: 'medium', label: 'Средний' },
+  { value: 'high', label: 'Максимальный' },
+];
+
+function SelectField({ label, value, onChange, options, activate }) {
+  return (
+    <label className="scenario-field" onFocus={activate}>
+      <span>{label}</span>
+      <span className="scenario-select-wrap">
+        <select value={value} onChange={(event) => { onChange(event.target.value); activate(); }}>
+          {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+        </select>
+        <span className="select-chevron">⌄</span>
+      </span>
+    </label>
+  );
+}
+
+function ScenarioFilterCard({ kind, title, distance, setDistance, fuel, setFuel, active, onActivate }) {
+  const isFuel = kind === 'fuel';
+  return (
+    <section className={`scenario-card ${active ? 'scenario-card-active' : ''}`}>
+      <button type="button" className="scenario-card-title" onClick={onActivate} aria-pressed={active}>
+        <span className={`scenario-icon ${isFuel ? 'scenario-icon-fuel' : 'scenario-icon-coverage'}`}>
+          {isFuel ? <IconFuel /> : <IconCoverage />}
+        </span>
+        <span>{title}</span>
+        <span className="scenario-active-hint">{active ? 'На карте' : 'Показать на карте'}</span>
+      </button>
+      <div className="scenario-fields">
+        <SelectField label="Дистанция" value={distance} onChange={setDistance} options={DISTANCES} activate={onActivate} />
+        <SelectField label="Расход топлива" value={fuel} onChange={setFuel} options={FUEL_LEVELS} activate={onActivate} />
+      </div>
+    </section>
+  );
+}
+
+const fmtInt = (value) => Number(value || 0).toLocaleString('ru-RU', { maximumFractionDigits: 0 });
+const fmtDecimal = (value, digits = 2) => Number(value || 0).toLocaleString('ru-RU', { maximumFractionDigits: digits });
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('filters'); 
-  const [distance, setDistance] = useState('1500');
-  const [fuel, setFuel] = useState('low');
-  
+  const [activeTab, setActiveTab] = useState('filters');
+  const [activeMetric, setActiveMetric] = useState('fuel');
+
+  // Two independent pairs of scenario filters, as specified in the project brief.
+  const [fuelDistance, setFuelDistance] = useState('4500');
+  const [fuelLevel, setFuelLevel] = useState('high');
+  const [coverageDistance, setCoverageDistance] = useState('4500');
+  const [coverageFuelLevel, setCoverageFuelLevel] = useState('high');
+
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [regionsData, setRegionsData] = useState({});
-  const [scenarioData, setScenarioData] = useState({});
+  const [fuelData, setFuelData] = useState({});
+  const [coverageData, setCoverageData] = useState({});
+  const [ratingData, setRatingData] = useState({});
+  const [fuelLoading, setFuelLoading] = useState(true);
+  const [coverageLoading, setCoverageLoading] = useState(true);
+  const [ratingLoading, setRatingLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
-    fetchRegions().then(setRegionsData).catch(console.error);
+    fetchRegions()
+      .then(setRegionsData)
+      .catch((error) => { console.error(error); setLoadError('Не удалось загрузить справочник регионов'); });
   }, []);
 
   useEffect(() => {
-    const group = activeTab === 'rating' ? 'rating' : 'fuel';
-    const scenario = activeTab === 'rating' ? fuel : `${distance}_${fuel}`;
-    fetchScenario(group, scenario).then(setScenarioData).catch(console.error);
-  }, [activeTab, distance, fuel]);
+    setFuelLoading(true);
+    fetchScenario('fuel', `${fuelDistance}_${fuelLevel}`)
+      .then(setFuelData)
+      .catch((error) => { console.error(error); setLoadError('Не удалось загрузить данные годового потребления топлива'); })
+      .finally(() => setFuelLoading(false));
+  }, [fuelDistance, fuelLevel]);
 
-  const selectedRank = selectedRegion && scenarioData[selectedRegion] 
-    ? getSortedRegions(scenarioData).find(r => r.id === selectedRegion)?.rank 
+  useEffect(() => {
+    setCoverageLoading(true);
+    fetchScenario('coverage', `${coverageDistance}_${coverageFuelLevel}`)
+      .then(setCoverageData)
+      .catch((error) => { console.error(error); setLoadError('Не удалось загрузить данные покрытия спроса'); })
+      .finally(() => setCoverageLoading(false));
+  }, [coverageDistance, coverageFuelLevel]);
+
+  useEffect(() => {
+    setRatingLoading(true);
+    fetchScenario('rating', fuelLevel)
+      .then(setRatingData)
+      .catch((error) => { console.error(error); setLoadError('Не удалось загрузить итоговый рейтинг'); })
+      .finally(() => setRatingLoading(false));
+  }, [fuelLevel]);
+
+  const scenarioData = useMemo(() => {
+    if (activeTab === 'rating') return ratingData;
+    return activeMetric === 'coverage' ? coverageData : fuelData;
+  }, [activeTab, activeMetric, ratingData, coverageData, fuelData]);
+
+  const sortedRegions = useMemo(() => getSortedRegions(scenarioData), [scenarioData]);
+  const viewLoading = activeTab === 'rating' ? ratingLoading : activeMetric === 'coverage' ? coverageLoading : fuelLoading;
+  const selectedRank = selectedRegion
+    ? sortedRegions.find((region) => region.id === selectedRegion)?.rank
     : null;
+  const selectedRegionData = selectedRegion ? regionsData[selectedRegion] : null;
+
+  const tableTitle = activeTab === 'rating'
+    ? 'Итоговый рейтинг регионов'
+    : activeMetric === 'coverage'
+      ? 'Доля покрытия спроса на топливо'
+      : 'Годовое потребление топлива';
+
+  const selectedScenarioText = activeTab === 'rating'
+    ? `Вариант расхода топлива: ${FUEL_LEVELS.find((item) => item.value === fuelLevel)?.label.toLowerCase()}`
+    : activeMetric === 'coverage'
+      ? `Сценарий: ${coverageDistance} км • ${FUEL_LEVELS.find((item) => item.value === coverageFuelLevel)?.label.toLowerCase()} расход`
+      : `Сценарий: ${fuelDistance} км • ${FUEL_LEVELS.find((item) => item.value === fuelLevel)?.label.toLowerCase()} расход`;
+
+  const formatValue = (value) => {
+    if (activeTab === 'rating') return Number(value).toFixed(4);
+    if (activeMetric === 'coverage') return `${fmtDecimal(value, 2)}%`;
+    return fmtInt(value);
+  };
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-bg-dark text-slate-200 font-sans overflow-hidden">
-      
-      {/* ШАПКА */}
-      <header className="bg-panel-dark border-b border-slate-700 px-6 py-4 flex justify-between items-center z-10 shadow-lg shrink-0">
-        <div className="flex items-center gap-3">
-          <IconLeaf />
-          <span className="text-xl font-bold text-white tracking-wide">ЭкоАтлас SAF</span>
+    <div className="app-shell">
+      <header className="app-header">
+        <div className="brand-lockup">
+          <span className="brand-mark"><IconLeaf /></span>
+          <span className="brand-name">ЭкоАтлас <b>SAF</b></span>
         </div>
-        
-        <div className="flex bg-slate-900 rounded-lg p-1 border border-slate-700">
-          <button 
-            onClick={() => setActiveTab('filters')} 
-            className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'filters' ? 'bg-green-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
-          >
-            Фильтры
+
+        <nav className="top-tabs" aria-label="Разделы сайта">
+          <button type="button" onClick={() => setActiveTab('filters')} className={activeTab === 'filters' ? 'top-tab active' : 'top-tab'}>
+            <span className="tab-filter-glyph">≡</span>Фильтры
           </button>
-          <button 
-            onClick={() => setActiveTab('rating')} 
-            className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'rating' ? 'bg-green-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
-          >
-            Итоговый рейтинг
+          <button type="button" onClick={() => setActiveTab('rating')} className={activeTab === 'rating' ? 'top-tab active' : 'top-tab'}>
+            <span className="tab-rating-glyph">▥</span>Итоговый рейтинг
           </button>
-        </div>
+        </nav>
+        <div className="header-note">ИНТЕРАКТИВНАЯ МОДЕЛЬ РЕГИОНАЛЬНОГО ПОТЕНЦИАЛА</div>
       </header>
 
-      {/* ФИЛЬТРЫ */}
-      <div className="bg-panel-dark px-6 py-4 border-b border-slate-700 flex gap-6 z-10 shadow-md shrink-0">
-        {activeTab === 'filters' && (
-          <div className="flex items-center gap-3">
-            <label className="text-sm font-medium text-slate-400">Дистанция:</label>
-            <div className="relative">
-              <select value={distance} onChange={(e) => setDistance(e.target.value)} className="appearance-none bg-slate-800 border border-slate-600 rounded-lg pl-4 pr-10 py-2 text-sm text-white outline-none focus:border-green-500 cursor-pointer transition-colors">
-                <option value="1500">1500 км</option>
-                <option value="3000">3000 км</option>
-                <option value="4500">4500 км</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">▼</div>
-            </div>
+      <div className="filters-bar">
+        {activeTab === 'filters' ? (
+          <div className="filter-groups-grid">
+            <ScenarioFilterCard
+              kind="fuel"
+              title="Годовой объём потребления топлива"
+              distance={fuelDistance}
+              setDistance={setFuelDistance}
+              fuel={fuelLevel}
+              setFuel={setFuelLevel}
+              active={activeMetric === 'fuel'}
+              onActivate={() => setActiveMetric('fuel')}
+            />
+            <ScenarioFilterCard
+              kind="coverage"
+              title="Доля покрытия спроса на топливо"
+              distance={coverageDistance}
+              setDistance={setCoverageDistance}
+              fuel={coverageFuelLevel}
+              setFuel={setCoverageFuelLevel}
+              active={activeMetric === 'coverage'}
+              onActivate={() => setActiveMetric('coverage')}
+            />
+          </div>
+        ) : (
+          <div className="rating-filter-row">
+            <span className="rating-filter-label">СЦЕНАРИЙ ИНТЕГРАЛЬНОГО РЕЙТИНГА</span>
+            <SelectField label="Расход топлива" value={fuelLevel} onChange={setFuelLevel} options={FUEL_LEVELS} activate={() => {}} />
+            <span className="rating-filter-note">Значения рейтинга пересчитываются для выбранного варианта расхода</span>
           </div>
         )}
-        
-        <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-slate-400">Расход топлива:</label>
-          <div className="relative">
-            <select value={fuel} onChange={(e) => setFuel(e.target.value)} className="appearance-none bg-slate-800 border border-slate-600 rounded-lg pl-4 pr-10 py-2 text-sm text-white outline-none focus:border-green-500 cursor-pointer transition-colors">
-              <option value="low">Малый</option>
-              <option value="medium">Средний</option>
-              <option value="high">Максимальный</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">▼</div>
-          </div>
-        </div>
       </div>
 
-      {/* ОСНОВНАЯ ЧАСТЬ */}
-      <div className="flex flex-1 relative overflow-hidden min-h-0">
-        
-        {/* Карта */}
-        <div className="flex-1 relative z-0">
+      <main className="workspace">
+        <section className="map-stage" aria-label="Интерактивная карта России">
           <Map scenarioData={scenarioData} onRegionClick={setSelectedRegion} />
-        </div>
+          <div className="map-caption">
+            <span className="map-caption-dot" />
+            {activeTab === 'rating' ? 'ИНТЕГРАЛЬНАЯ ОЦЕНКА' : activeMetric === 'coverage' ? 'ПОКРЫТИЕ СПРОСА' : 'ПОТРЕБЛЕНИЕ ТОПЛИВА'}
+          </div>
+        </section>
 
-        {/* Правая панель */}
-        <div className="w-[420px] bg-panel-dark border-l border-slate-700 p-5 overflow-y-auto z-10 shadow-2xl flex flex-col gap-5 shrink-0">
-          
-          {/* Плашка выбранного региона (Добавлен shrink-0, убран overflow-hidden) */}
-          {selectedRegion && regionsData[selectedRegion] && (
-            <div className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-5 border border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.15)] shrink-0">
-              <h2 className="text-lg font-bold mb-5 text-white flex items-start gap-2">
-                <IconLeaf />
-                <span className="leading-tight">{regionsData[selectedRegion].name}</span>
-              </h2>
-              
-              <div className="flex gap-4">
-                {/* Левая часть с данными */}
-                <div className="flex-1 space-y-3 text-sm min-w-0">
-                  <div className="flex items-start gap-3">
-                    <IconUsers />
-                    <div className="flex flex-col">
-                      <span className="text-xs text-slate-400">Население</span>
-                      <span className="font-semibold text-white">{regionsData[selectedRegion].population.toLocaleString('ru-RU')} чел.</span>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <IconGas />
-                    <div className="flex flex-col">
-                      <span className="text-xs text-slate-400">Объем SAF</span>
-                      <span className="font-semibold text-white">{regionsData[selectedRegion].saf} тыс. т</span>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <IconPlane />
-                    <div className="flex flex-col">
-                      <span className="text-xs text-slate-400">Пассажиропоток</span>
-                      <span className="font-semibold text-white">{regionsData[selectedRegion].passengers.toLocaleString('ru-RU')} чел.</span>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <IconCloud />
-                    <div className="flex flex-col">
-                      <span className="text-xs text-slate-400">Предотвращенные выбросы</span>
-                      <span className="font-semibold text-white">{regionsData[selectedRegion].emissions.toLocaleString('ru-RU')} т CO₂</span>
-                    </div>
-                  </div>
+        <aside className="right-sidebar">
+          {selectedRegionData ? (
+            <section className="region-summary">
+              <div className="region-summary-heading">
+                <span className="summary-leaf"><IconLeaf /></span>
+                <h2>{selectedRegionData.name}</h2>
+              </div>
+              <div className="region-summary-body">
+                <div className="region-metrics">
+                  <div className="metric-line"><IconUsers /><div><span>Население</span><strong>{fmtInt(selectedRegionData.population)} чел.</strong></div></div>
+                  <div className="metric-line"><IconGas /><div><span>Объём SAF</span><strong>{fmtDecimal(selectedRegionData.saf, 2)} тыс. т</strong></div></div>
+                  <div className="metric-line"><IconPlane /><div><span>Годовой пассажиропоток</span><strong>{fmtInt(selectedRegionData.passengers)} чел.</strong></div></div>
+                  <div className="metric-line"><IconCloud /><div><span>Предотвращённые выбросы</span><strong>{fmtDecimal(selectedRegionData.emissions, 2)} т CO₂</strong></div></div>
                 </div>
-
-                {/* Правая часть с рейтингом (Добавлен shrink-0) */}
                 {selectedRank && (
-                  <div className="flex flex-col items-center justify-center border-l border-slate-700 pl-4 shrink-0">
-                    <div 
-                      className="w-16 h-16 rounded-full border-4 flex items-center justify-center text-2xl font-bold text-white mb-2"
-                      style={{ borderColor: RANK_COLORS[selectedRank - 1] }}
-                    >
-                      {selectedRank}
-                    </div>
-                    <span className="text-[10px] text-slate-400 uppercase tracking-wider text-center w-16 leading-tight">Рейтинг<br/>региона</span>
+                  <div className="region-rank-box">
+                    <div className="region-rank-number" style={{ '--rank-color': RANK_COLORS[selectedRank - 1] }}>{selectedRank}</div>
+                    <span>РЕЙТИНГ<br />РЕГИОНА</span>
                   </div>
                 )}
               </div>
-            </div>
+            </section>
+          ) : (
+            <section className="region-placeholder">
+              <span className="placeholder-icon"><IconLeaf /></span>
+              <div><strong>Выберите регион</strong><span>Нажмите на один из выделенных регионов на карте, чтобы открыть его показатели</span></div>
+            </section>
           )}
 
-          {/* Таблица рейтинга (Добавлен flex-1 min-h-0, чтобы скроллился только список) */}
-          <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700 flex-1 flex flex-col min-h-0">
-            <h3 className="text-sm font-bold mb-4 text-slate-200 uppercase tracking-wider shrink-0">
-              {activeTab === 'rating' ? 'Итоговый рейтинг' : 'Годовое потребление'}
-            </h3>
-            
-            {Object.keys(scenarioData).length === 0 ? (
-              <p className="text-slate-500 text-sm">Загрузка данных...</p>
+          <section className="ranking-panel">
+            <div className="ranking-heading">
+              <div>
+                <h3>{tableTitle}</h3>
+                <p>{selectedScenarioText}</p>
+              </div>
+              <span className="ranking-sort">↓</span>
+            </div>
+
+            {loadError ? (
+              <p className="status-message error-message">{loadError}</p>
+            ) : viewLoading ? (
+              <p className="status-message">Загрузка данных…</p>
+            ) : sortedRegions.length === 0 ? (
+              <p className="status-message">Данные пока недоступны</p>
             ) : (
-              <div className="space-y-1 overflow-y-auto pr-1 flex-1">
-                {getSortedRegions(scenarioData).map((region) => (
-                  <div 
+              <>
+              <div className="ranking-columns"><span>Регион</span><span>{activeTab === 'rating' ? 'Баллы' : activeMetric === 'coverage' ? 'Покрытие, %' : 'Значение'}</span></div>
+              <div className="ranking-list">
+                {sortedRegions.map((region) => (
+                  <button
+                    type="button"
                     key={region.id}
                     onClick={() => setSelectedRegion(region.id)}
-                    className={`flex items-center justify-between p-2.5 rounded-lg cursor-pointer transition-all ${selectedRegion === region.id ? 'bg-slate-700 ring-1 ring-slate-500' : 'hover:bg-slate-700/50'}`}
+                    className={`ranking-row ${selectedRegion === region.id ? 'selected' : ''}`}
                   >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span 
-                        className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full text-[11px] font-bold text-slate-900"
-                        style={{ backgroundColor: RANK_COLORS[region.rank - 1] || RANK_COLORS[7] }}
-                      >
-                        {region.rank}
-                      </span>
-                      <span className="text-sm text-slate-200 truncate">
-                        {regionsData[region.id]?.name || region.id}
-                      </span>
-                    </div>
-                    <span className="text-sm font-semibold text-slate-300 flex-shrink-0 ml-2">
-                      {activeTab === 'rating' 
-                        ? region.value.toFixed(4) 
-                        : region.value.toLocaleString('ru-RU', { maximumFractionDigits: 0 })}
-                    </span>
-                  </div>
+                    <span className="rank-index" style={{ '--rank-color': RANK_COLORS[region.rank - 1] }}>{region.rank}</span>
+                    <span className="rank-region-name">{regionsData[region.id]?.name || region.id}</span>
+                    <strong className="rank-value">{formatValue(region.value)}</strong>
+                  </button>
                 ))}
               </div>
+              </>
             )}
-          </div>
-
-        </div>
-      </div>
+            <div className="ranking-footnote"><span /> Максимальное значение — зелёный · минимальное — красный</div>
+          </section>
+        </aside>
+      </main>
     </div>
   );
 }

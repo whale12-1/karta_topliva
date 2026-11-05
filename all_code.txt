@@ -1,0 +1,487 @@
+﻿// РўР°Рє РєР°Рє Nginx РїСЂРѕРєСЃРёСЂСѓРµС‚ /api РЅР° Р±СЌРєРµРЅРґ, РјС‹ РїСЂРѕСЃС‚Рѕ РїРёС€РµРј /api
+export const fetchRegions = async () => {
+  const res = await fetch("/api/regions");
+  if (!res.ok) throw new Error("Network response was not ok");
+  return res.json();
+};
+
+export const fetchScenario = async (group, scenario) => {
+  const res = await fetch(`/api/scenarios/${group}/${scenario}`);
+  if (!res.ok) throw new Error("Network response was not ok");
+  return res.json();
+};
+import { useEffect } from 'react';
+import { MapContainer, GeoJSON, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import { getRegionColors } from '../utils/calculate';
+import { NAME_TO_ID } from '../data/constants';
+import 'leaflet/dist/leaflet.css';
+import russiaGeoJson from '../data/russia.json'; 
+
+// РЎРѕР·РґР°РµРј СЃРІРѕР№ СЂРµРЅРґРµСЂРµСЂ Canvas СЃ Р±СѓС„РµСЂРѕРј (С‡С‚РѕР±С‹ РѕРЅ СЂРёСЃРѕРІР°Р» РѕР±Р»Р°СЃС‚Рё СЃ Р·Р°РїР°СЃРѕРј Р·Р° РїСЂРµРґРµР»Р°РјРё СЌРєСЂР°РЅР°)
+const canvasRenderer = L.canvas({ padding: 0.5 });
+
+function MapSettings() {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!russiaGeoJson) return;
+
+    const geoJsonLayer = L.geoJSON(russiaGeoJson);
+    const bounds = geoJsonLayer.getBounds();
+    
+    // Р”РѕР±Р°РІР»СЏРµРј РѕС‚СЃС‚СѓРї 5%, С‡С‚РѕР±С‹ РїСЂРё РїРµСЂРµС‚Р°СЃРєРёРІР°РЅРёРё РєР°СЂС‚Р° РЅРµ СѓРїРёСЂР°Р»Р°СЃСЊ РІ СЃР°РјС‹Р№ РєСЂР°Р№
+    const paddedBounds = bounds.pad(0.05);
+
+    map.fitBounds(bounds, { padding: [20, 20] });
+    map.setMaxBounds(paddedBounds);
+    
+    // РћРіСЂР°РЅРёС‡РёРІР°РµРј Р·СѓРј
+    map.setMinZoom(map.getBoundsZoom(bounds));
+    map.setMaxZoom(7);
+
+    geoJsonLayer.remove();
+  }, [map]);
+
+  return null;
+}
+
+function CustomZoomControl() {
+  const map = useMap();
+  return (
+    <div className="absolute top-4 left-4 z-[1000] flex flex-col bg-panel-dark border border-slate-700 rounded-lg overflow-hidden shadow-xl">
+      <button onClick={() => map.zoomIn()} className="w-10 h-10 flex items-center justify-center text-xl font-bold text-slate-300 hover:text-white hover:bg-slate-700 transition-colors border-b border-slate-700">+</button>
+      <button onClick={() => map.zoomOut()} className="w-10 h-10 flex items-center justify-center text-xl font-bold text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">в€’</button>
+    </div>
+  );
+}
+
+export default function Map({ scenarioData, onRegionClick }) {
+  const colorMap = getRegionColors(scenarioData);
+
+  const styleFeature = (feature) => {
+    const id = NAME_TO_ID[feature.properties.name];
+    
+    if (id && colorMap[id]) {
+      return {
+        fillColor: colorMap[id],
+        weight: 1,
+        opacity: 1,
+        color: '#475569',
+        fillOpacity: 0.9
+      };
+    }
+
+    return {
+      fillColor: '#1e293b',
+      weight: 1,
+      opacity: 1,
+      color: '#475569',
+      fillOpacity: 1
+    };
+  };
+
+  const onEachFeature = (feature, layer) => {
+    const id = NAME_TO_ID[feature.properties.name];
+    
+    if (id) {
+      layer.on({
+        mouseover: (e) => {
+          const layer = e.target;
+          layer.setStyle({ weight: 2, color: '#ffffff' });
+        },
+        mouseout: (e) => {
+          const layer = e.target;
+          layer.setStyle(styleFeature(feature));
+        },
+        click: () => {
+          onRegionClick(id);
+        }
+      });
+    }
+  };
+
+  return (
+    <div style={{ height: '100%', width: '100%', position: 'relative' }}>
+      <MapContainer 
+        center={[62, 95]} 
+        zoom={3} 
+        style={{ height: '100%', width: '100%', position: 'absolute', top: 0, left: 0, zIndex: 1, backgroundColor: '#0f172a' }}
+        zoomControl={false}
+        attributionControl={false}
+        maxBoundsViscosity={1.0}
+        preferCanvas={true}
+        zoomSnap={0.1}
+        // РћРўРљР›Р®Р§РђР•Рњ РђРќРРњРђР¦РР Р”Р›РЇ РџР›РђР’РќРћРЎРўР:
+        zoomAnimation={false} 
+        fadeAnimation={false}
+        inertia={false} 
+      >
+        <MapSettings />
+        <CustomZoomControl />
+        
+        <GeoJSON 
+          key={JSON.stringify(colorMap)} 
+          data={russiaGeoJson} 
+          style={styleFeature} 
+          onEachFeature={onEachFeature}
+          renderer={canvasRenderer} // РџР•Р Р•Р”РђР•Рњ РќРђРЁ Р‘РЈР¤Р•Р РќР«Р™ Р Р•РќР”Р•Р Р•Р 
+        />
+      </MapContainer>
+    </div>
+  );
+}
+export const RANK_COLORS = [
+  "#14532d",
+  "#166534",
+  "#22c55e",
+  "#a3e635",
+  "#fde047",
+  "#f97316",
+  "#ef4444",
+  "#7f1d1d",
+];
+
+export const NAME_TO_ID = {
+  "РљСЂР°СЃРЅРѕРґР°СЂСЃРєРёР№ РєСЂР°Р№": "krasnodar",
+  "РЎРІРµСЂРґР»РѕРІСЃРєР°СЏ РѕР±Р»Р°СЃС‚СЊ": "sverdlovsk",
+  "РЎС‚Р°РІСЂРѕРїРѕР»СЊСЃРєРёР№ РєСЂР°Р№": "stavropol",
+  "РЎР°СЂР°С‚РѕРІСЃРєР°СЏ РѕР±Р»Р°СЃС‚СЊ": "saratov",
+  "РўСѓР»СЊСЃРєР°СЏ РѕР±Р»Р°СЃС‚СЊ": "tula",
+  "РђРјСѓСЂСЃРєР°СЏ РѕР±Р»Р°СЃС‚СЊ": "amur",
+  "РќРѕРІРіРѕСЂРѕРґСЃРєР°СЏ РѕР±Р»Р°СЃС‚СЊ": "novgorod",
+  "Р•РІСЂРµР№СЃРєР°СЏ Р°РІС‚РѕРЅРѕРјРЅР°СЏ РѕР±Р»Р°СЃС‚СЊ": "eao",
+};
+import { RANK_COLORS } from "../data/constants";
+
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕР±СЉРµРєС‚ { regionId: color }
+export function getRegionColors(scenarioData) {
+  const entries = Object.entries(scenarioData || {});
+  // РЎРѕСЂС‚РёСЂСѓРµРј РїРѕ СѓР±С‹РІР°РЅРёСЋ (1 РјРµСЃС‚Рѕ = СЃР°РјРѕРµ Р±РѕР»СЊС€РѕРµ Р·РЅР°С‡РµРЅРёРµ)
+  entries.sort((a, b) => b[1] - a[1]);
+
+  const colorMap = {};
+  entries.forEach(([id], index) => {
+    colorMap[id] = RANK_COLORS[index] || RANK_COLORS[RANK_COLORS.length - 1];
+  });
+  return colorMap;
+}
+
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹С… СЂРµРіРёРѕРЅРѕРІ РґР»СЏ С‚Р°Р±Р»РёС†С‹
+export function getSortedRegions(scenarioData) {
+  return Object.entries(scenarioData || {})
+    .sort((a, b) => b[1] - a[1])
+    .map(([id, value], index) => ({ id, value, rank: index + 1 }));
+}
+import { useState, useEffect } from 'react';
+import Map from './components/Map';
+import { fetchRegions, fetchScenario } from './api';
+import { getSortedRegions } from './utils/calculate';
+import { RANK_COLORS } from './data/constants';
+
+// --- РРєРѕРЅРєРё (SVG) ---
+const IconLeaf = () => <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M2 12C2 6.477 6.477 2 12 2c4.991 0 9.123 3.65 9.876 8.421.021.134.034.269.034.406 0 6.075-4.925 11-11 11-5.075 0-9.38-3.456-10.577-8.135a1.002 1.002 0 0 1 1.667-.692ZM12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z"/></svg>;
+const IconUsers = () => <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>;
+const IconGas = () => <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 3v2m6-2v2M9 19v-2m6-2v-2M4 9h2m-2 6h2m14-6h-2m2 6h-2M5 7a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V9a2 2 0 00-2-2H5z" /></svg>;
+const IconPlane = () => <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>;
+const IconCloud = () => <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" /></svg>;
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('filters'); 
+  const [distance, setDistance] = useState('1500');
+  const [fuel, setFuel] = useState('low');
+  
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [regionsData, setRegionsData] = useState({});
+  const [scenarioData, setScenarioData] = useState({});
+
+  useEffect(() => {
+    fetchRegions().then(setRegionsData).catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    const group = activeTab === 'rating' ? 'rating' : 'fuel';
+    const scenario = activeTab === 'rating' ? fuel : `${distance}_${fuel}`;
+    fetchScenario(group, scenario).then(setScenarioData).catch(console.error);
+  }, [activeTab, distance, fuel]);
+
+  const selectedRank = selectedRegion && scenarioData[selectedRegion] 
+    ? getSortedRegions(scenarioData).find(r => r.id === selectedRegion)?.rank 
+    : null;
+
+  return (
+    <div className="h-screen w-screen flex flex-col bg-bg-dark text-slate-200 font-sans overflow-hidden">
+      
+      {/* РЁРђРџРљРђ */}
+      <header className="bg-panel-dark border-b border-slate-700 px-6 py-4 flex justify-between items-center z-10 shadow-lg shrink-0">
+        <div className="flex items-center gap-3">
+          <IconLeaf />
+          <span className="text-xl font-bold text-white tracking-wide">Р­РєРѕРђС‚Р»Р°СЃ SAF</span>
+        </div>
+        
+        <div className="flex bg-slate-900 rounded-lg p-1 border border-slate-700">
+          <button 
+            onClick={() => setActiveTab('filters')} 
+            className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'filters' ? 'bg-green-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+          >
+            Р¤РёР»СЊС‚СЂС‹
+          </button>
+          <button 
+            onClick={() => setActiveTab('rating')} 
+            className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'rating' ? 'bg-green-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+          >
+            РС‚РѕРіРѕРІС‹Р№ СЂРµР№С‚РёРЅРі
+          </button>
+        </div>
+      </header>
+
+      {/* Р¤РР›Р¬РўР Р« */}
+      <div className="bg-panel-dark px-6 py-4 border-b border-slate-700 flex gap-6 z-10 shadow-md shrink-0">
+        {activeTab === 'filters' && (
+          <div className="flex items-center gap-3">
+            <label className="text-sm font-medium text-slate-400">Р”РёСЃС‚Р°РЅС†РёСЏ:</label>
+            <div className="relative">
+              <select value={distance} onChange={(e) => setDistance(e.target.value)} className="appearance-none bg-slate-800 border border-slate-600 rounded-lg pl-4 pr-10 py-2 text-sm text-white outline-none focus:border-green-500 cursor-pointer transition-colors">
+                <option value="1500">1500 РєРј</option>
+                <option value="3000">3000 РєРј</option>
+                <option value="4500">4500 РєРј</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">в–ј</div>
+            </div>
+          </div>
+        )}
+        
+        <div className="flex items-center gap-3">
+          <label className="text-sm font-medium text-slate-400">Р Р°СЃС…РѕРґ С‚РѕРїР»РёРІР°:</label>
+          <div className="relative">
+            <select value={fuel} onChange={(e) => setFuel(e.target.value)} className="appearance-none bg-slate-800 border border-slate-600 rounded-lg pl-4 pr-10 py-2 text-sm text-white outline-none focus:border-green-500 cursor-pointer transition-colors">
+              <option value="low">РњР°Р»С‹Р№</option>
+              <option value="medium">РЎСЂРµРґРЅРёР№</option>
+              <option value="high">РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">в–ј</div>
+          </div>
+        </div>
+      </div>
+
+      {/* РћРЎРќРћР’РќРђРЇ Р§РђРЎРўР¬ */}
+      <div className="flex flex-1 relative overflow-hidden min-h-0">
+        
+        {/* РљР°СЂС‚Р° */}
+        <div className="flex-1 relative z-0">
+          <Map scenarioData={scenarioData} onRegionClick={setSelectedRegion} />
+        </div>
+
+        {/* РџСЂР°РІР°СЏ РїР°РЅРµР»СЊ */}
+        <div className="w-[420px] bg-panel-dark border-l border-slate-700 p-5 overflow-y-auto z-10 shadow-2xl flex flex-col gap-5 shrink-0">
+          
+          {/* РџР»Р°С€РєР° РІС‹Р±СЂР°РЅРЅРѕРіРѕ СЂРµРіРёРѕРЅР° (Р”РѕР±Р°РІР»РµРЅ shrink-0, СѓР±СЂР°РЅ overflow-hidden) */}
+          {selectedRegion && regionsData[selectedRegion] && (
+            <div className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-5 border border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.15)] shrink-0">
+              <h2 className="text-lg font-bold mb-5 text-white flex items-start gap-2">
+                <IconLeaf />
+                <span className="leading-tight">{regionsData[selectedRegion].name}</span>
+              </h2>
+              
+              <div className="flex gap-4">
+                {/* Р›РµРІР°СЏ С‡Р°СЃС‚СЊ СЃ РґР°РЅРЅС‹РјРё */}
+                <div className="flex-1 space-y-3 text-sm min-w-0">
+                  <div className="flex items-start gap-3">
+                    <IconUsers />
+                    <div className="flex flex-col">
+                      <span className="text-xs text-slate-400">РќР°СЃРµР»РµРЅРёРµ</span>
+                      <span className="font-semibold text-white">{regionsData[selectedRegion].population.toLocaleString('ru-RU')} С‡РµР».</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <IconGas />
+                    <div className="flex flex-col">
+                      <span className="text-xs text-slate-400">РћР±СЉРµРј SAF</span>
+                      <span className="font-semibold text-white">{regionsData[selectedRegion].saf} С‚С‹СЃ. С‚</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <IconPlane />
+                    <div className="flex flex-col">
+                      <span className="text-xs text-slate-400">РџР°СЃСЃР°Р¶РёСЂРѕРїРѕС‚РѕРє</span>
+                      <span className="font-semibold text-white">{regionsData[selectedRegion].passengers.toLocaleString('ru-RU')} С‡РµР».</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <IconCloud />
+                    <div className="flex flex-col">
+                      <span className="text-xs text-slate-400">РџСЂРµРґРѕС‚РІСЂР°С‰РµРЅРЅС‹Рµ РІС‹Р±СЂРѕСЃС‹</span>
+                      <span className="font-semibold text-white">{regionsData[selectedRegion].emissions.toLocaleString('ru-RU')} С‚ COв‚‚</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* РџСЂР°РІР°СЏ С‡Р°СЃС‚СЊ СЃ СЂРµР№С‚РёРЅРіРѕРј (Р”РѕР±Р°РІР»РµРЅ shrink-0) */}
+                {selectedRank && (
+                  <div className="flex flex-col items-center justify-center border-l border-slate-700 pl-4 shrink-0">
+                    <div 
+                      className="w-16 h-16 rounded-full border-4 flex items-center justify-center text-2xl font-bold text-white mb-2"
+                      style={{ borderColor: RANK_COLORS[selectedRank - 1] }}
+                    >
+                      {selectedRank}
+                    </div>
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider text-center w-16 leading-tight">Р РµР№С‚РёРЅРі<br/>СЂРµРіРёРѕРЅР°</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* РўР°Р±Р»РёС†Р° СЂРµР№С‚РёРЅРіР° (Р”РѕР±Р°РІР»РµРЅ flex-1 min-h-0, С‡С‚РѕР±С‹ СЃРєСЂРѕР»Р»РёР»СЃСЏ С‚РѕР»СЊРєРѕ СЃРїРёСЃРѕРє) */}
+          <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700 flex-1 flex flex-col min-h-0">
+            <h3 className="text-sm font-bold mb-4 text-slate-200 uppercase tracking-wider shrink-0">
+              {activeTab === 'rating' ? 'РС‚РѕРіРѕРІС‹Р№ СЂРµР№С‚РёРЅРі' : 'Р“РѕРґРѕРІРѕРµ РїРѕС‚СЂРµР±Р»РµРЅРёРµ'}
+            </h3>
+            
+            {Object.keys(scenarioData).length === 0 ? (
+              <p className="text-slate-500 text-sm">Р—Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С…...</p>
+            ) : (
+              <div className="space-y-1 overflow-y-auto pr-1 flex-1">
+                {getSortedRegions(scenarioData).map((region) => (
+                  <div 
+                    key={region.id}
+                    onClick={() => setSelectedRegion(region.id)}
+                    className={`flex items-center justify-between p-2.5 rounded-lg cursor-pointer transition-all ${selectedRegion === region.id ? 'bg-slate-700 ring-1 ring-slate-500' : 'hover:bg-slate-700/50'}`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span 
+                        className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full text-[11px] font-bold text-slate-900"
+                        style={{ backgroundColor: RANK_COLORS[region.rank - 1] || RANK_COLORS[7] }}
+                      >
+                        {region.rank}
+                      </span>
+                      <span className="text-sm text-slate-200 truncate">
+                        {regionsData[region.id]?.name || region.id}
+                      </span>
+                    </div>
+                    <span className="text-sm font-semibold text-slate-300 flex-shrink-0 ml-2">
+                      {activeTab === 'rating' 
+                        ? region.value.toFixed(4) 
+                        : region.value.toLocaleString('ru-RU', { maximumFractionDigits: 0 })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0f172a; /* РўРµРјРЅС‹Р№ С„РѕРЅ, С‡С‚РѕР±С‹ РЅРµ Р±С‹Р»Рѕ Р±РµР»С‹С… РІСЃРїС‹С€РµРє */
+}
+.map-tiles {
+  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+/* РљСЂР°СЃРёРІС‹Р№ СЃРєСЂРѕР»Р»Р±Р°СЂ РґР»СЏ С‚РµРјРЅРѕР№ С‚РµРјС‹ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a; 
+}
+::-webkit-scrollbar-thumb {
+  background: #334155; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569; 
+}
+
+/* РџРѕРґРєР»СЋС‡Р°РµРј РєСЂР°СЃРёРІС‹Р№ С€СЂРёС„С‚ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+body { font-family: 'Inter', sans-serif; }
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-leaflet": "^5.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "autoprefixer": "^10.6.2",
+    "eslint": "^10.13.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.13.0",
+    "postcss": "^8.5.32",
+    "tailwindcss": "^3.4.19",
+    "vite": "^8.3.5"
+  }
+}
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      // Р’СЃРµ Р·Р°РїСЂРѕСЃС‹, РЅР°С‡РёРЅР°СЋС‰РёРµСЃСЏ СЃ /api, Р±СѓРґСѓС‚ РїРµСЂРµРЅР°РїСЂР°РІР»СЏС‚СЊСЃСЏ РЅР° Python-Р±СЌРєРµРЅРґ
+      "/api": {
+        target: "http://127.0.0.1:8000",
+        changeOrigin: true,
+      },
+    },
+  },
+});
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        // Р¦РІРµС‚Р° РёР· РўР— (РґР»СЏ СЂРµР№С‚РёРЅРіР°)
+        "rank-1": "#14532d",
+        "rank-2": "#166534",
+        "rank-3": "#22c55e",
+        "rank-4": "#a3e635",
+        "rank-5": "#fde047",
+        "rank-6": "#f97316",
+        "rank-7": "#ef4444",
+        "rank-8": "#7f1d1d",
+        "bg-dark": "#0f172a",
+        "panel-dark": "#1e293b",
+      },
+    },
+  },
+  plugins: [],
+};
